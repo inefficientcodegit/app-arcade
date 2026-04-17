@@ -50,10 +50,10 @@ export default function App() {
   );
 
   return (
-    <div className="h-screen bg-[#050505] text-gray-100 font-sans selection:bg-emerald-500/30 flex flex-col overflow-hidden">
+    <div className="min-h-screen md:h-screen bg-[#050505] text-gray-100 font-sans md:overflow-hidden flex flex-col selection:bg-emerald-500/30">
       
       {/* Navbar */}
-      <nav className="border-b border-white/5 bg-black/80 backdrop-blur-xl shrink-0 px-6 py-4">
+      <nav className="border-b border-white/5 bg-black/80 backdrop-blur-xl shrink-0 px-6 py-4 z-50">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-black tracking-tighter bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent uppercase">
             Inefficient Arcade
@@ -67,11 +67,23 @@ export default function App() {
         </div>
       </nav>
 
-      {/* Main Layout - Uses flex-1 to fill remaining space */}
-      <main className="flex-1 max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-8 p-6 lg:p-12 overflow-hidden">
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 md:p-8 lg:p-12 md:overflow-hidden">
         
-        {/* Left: Library */}
-        <div className="w-full lg:w-72 flex flex-col gap-6 shrink-0 order-2 lg:order-1 lg:max-h-full overflow-y-auto pr-2 custom-scrollbar">
+        {/* Left: Library & Disclaimer */}
+        <div className="w-full lg:w-72 flex flex-col gap-6 shrink-0 order-2 lg:order-1 md:overflow-y-auto custom-scrollbar md:pr-2">
+          
+          {/* Arcade Disclaimer Note */}
+          <div className="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
+            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+              Development Note
+            </h3>
+            <p className="text-[10px] leading-relaxed text-gray-500 font-medium italic">
+              All games in this arcade are pre-publication development samples. Games marked as <span className="text-emerald-400 font-bold not-italic">LIVE</span> have final, polished versions available on official app stores.
+            </p>
+          </div>
+
           <div className="space-y-4">
             <h2 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">Filter</h2>
             <div className="flex gap-1 p-1 bg-white/5 rounded-2xl border border-white/10">
@@ -80,7 +92,7 @@ export default function App() {
                   key={type}
                   onClick={() => handleFilterChange(type)}
                   className={`flex-1 py-2 text-[9px] font-black uppercase rounded-xl transition-all
-                    ${filter === type ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-gray-500 hover:text-gray-300'}`}
+                    ${filter === type ? 'bg-emerald-500 text-black' : 'text-gray-500 hover:text-gray-300'}`}
                 >
                   {type === 'final' ? 'Live' : type === 'in-dev' ? 'Dev' : 'All'}
                 </button>
@@ -113,24 +125,23 @@ export default function App() {
           </div>
         </div>
 
-        {/* Center: Stage - Fixed Height Logic */}
-        <div className="flex-1 flex flex-col items-center justify-center order-1 lg:order-2 h-full min-h-0">
+        {/* Center: Stage */}
+        <div className="flex-1 flex flex-col items-center justify-center order-1 lg:order-2">
           {activeApp ? (
-            <div className="relative w-full h-full flex items-center justify-center max-h-[75vh]">
-              <div className="absolute inset-0 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none"></div>
-              {/* This container uses aspect-ratio and max-height to ensure it never overflows vertically */}
-              <div className="relative h-full aspect-[9/19] bg-black border-[8px] md:border-[10px] border-[#151515] rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl ring-1 ring-white/10">
+            <div className="relative w-full flex items-center justify-center md:h-full">
+              <div className="absolute inset-0 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none hidden md:block"></div>
+              <div className="relative w-full max-w-[320px] md:max-w-none md:h-full aspect-[9/16] md:aspect-[9/19] bg-black border-[8px] md:border-[10px] border-[#151515] rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl ring-1 ring-white/10">
                 <iframe src={activeApp.url} title={activeApp.title} className="w-full h-full" sandbox="allow-scripts allow-same-origin" />
               </div>
             </div>
           ) : (
-            <div className="text-gray-700 font-black uppercase text-xs tracking-widest">No Matches Found</div>
+            <div className="text-gray-700 font-black uppercase text-xs tracking-widest py-20">No Matches Found</div>
           )}
         </div>
 
         {/* Right: Info Box */}
         {activeApp && (
-          <div className="w-full lg:w-80 space-y-8 order-3 shrink-0 lg:max-h-full overflow-y-auto pr-2 custom-scrollbar">
+          <div className="w-full lg:w-80 space-y-8 order-3 shrink-0 md:overflow-y-auto custom-scrollbar md:pr-2 pb-24 lg:pb-0">
             <div className="space-y-4">
               <h2 className="text-4xl lg:text-5xl font-black tracking-tighter leading-none">{activeApp.title}</h2>
               <p className="text-gray-500 leading-relaxed font-medium text-sm lg:text-base">
@@ -139,7 +150,7 @@ export default function App() {
             </div>
 
             {activeApp.status === 'final' ? (
-              <div className="p-6 bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-[2rem] space-y-6">
+              <div className="p-8 bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-[2rem] space-y-6">
                 <div className="space-y-1">
                   <h3 className="text-white font-black text-xs uppercase tracking-widest">Experience More</h3>
                   <p className="text-[10px] text-gray-500 font-semibold leading-normal italic">Install for full functionality & haptics.</p>
@@ -160,7 +171,7 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <div className="p-6 border border-dashed border-white/10 rounded-[2rem] flex items-center justify-center">
+              <div className="p-8 border border-dashed border-white/10 rounded-[2rem] flex items-center justify-center">
                 <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em]">Build in progress</p>
               </div>
             )}
@@ -170,14 +181,14 @@ export default function App() {
 
       {/* MOBILE STICKY CTA */}
       {activeApp && activeApp.status === 'final' && (
-        <div className="md:hidden fixed bottom-4 left-4 right-4 z-[100]">
-          <div className="bg-emerald-500 p-3 rounded-[1.5rem] shadow-2xl flex items-center justify-between gap-4 border border-white/20">
+        <div className="md:hidden fixed bottom-6 left-6 right-6 z-[100]">
+          <div className="bg-emerald-500 p-4 rounded-[2rem] shadow-2xl flex items-center justify-between gap-4 border border-white/20">
             <div className="pl-2">
-              <h4 className="text-[10px] font-black text-black leading-none uppercase tracking-tighter">Get the App</h4>
+              <h4 className="text-[11px] font-black text-black leading-none uppercase tracking-tighter">Get the App</h4>
             </div>
             <div className="flex gap-2">
-              {activeApp.iosLink && <a href={activeApp.iosLink} target="_blank" rel="noreferrer" className="bg-black p-2.5 rounded-xl"><AppleIcon /></a>}
-              {activeApp.androidLink && <a href={activeApp.androidLink} target="_blank" rel="noreferrer" className="bg-black p-2.5 rounded-xl"><PlayStoreIcon /></a>}
+              {activeApp.iosLink && <a href={activeApp.iosLink} target="_blank" rel="noreferrer" className="bg-black p-3 rounded-xl"><AppleIcon /></a>}
+              {activeApp.androidLink && <a href={activeApp.androidLink} target="_blank" rel="noreferrer" className="bg-black p-3 rounded-xl"><PlayStoreIcon /></a>}
             </div>
           </div>
         </div>
