@@ -173,7 +173,14 @@ export default function App() {
             <div className="relative w-full flex items-center justify-center md:h-full">
               <div className="absolute inset-0 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none hidden md:block"></div>
               <div className="relative w-full max-w-[320px] md:max-w-none md:h-full aspect-[9/16] md:aspect-[9/19] bg-black border-[8px] md:border-[10px] border-[#151515] rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl ring-1 ring-white/10">
-                <iframe src={activeApp.url} title={activeApp.title} className="w-full h-full" sandbox="allow-scripts allow-same-origin" />
+                {/* Dynamically assign the camera permissions to the iframe if specified in JSON */}
+                <iframe 
+                  src={activeApp.url} 
+                  title={activeApp.title} 
+                  className="w-full h-full" 
+                  sandbox="allow-scripts allow-same-origin" 
+                  allow={activeApp.camera === 'allow' ? "camera; autoplay" : undefined}
+                />
               </div>
             </div>
           ) : (
