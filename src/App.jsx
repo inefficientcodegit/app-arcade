@@ -65,8 +65,13 @@ export default function App() {
   useEffect(() => {
     if (apps.length > 0 && apps[activeAppIndex]) {
       const currentApp = apps[activeAppIndex];
-      const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?game=${currentApp.id}`;
-      window.history.pushState({ path: newUrl }, '', newUrl);
+      try {
+        const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?game=${currentApp.id}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+      } catch (error) {
+        // Ignored. Browsers often block history.pushState in blob/iframe environments
+        console.warn("Could not update URL history state (expected behavior in iframes).");
+      }
     }
   }, [activeAppIndex, apps]);
 
@@ -154,7 +159,7 @@ export default function App() {
                 >
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black
                     ${activeApp && activeApp.id === app.id ? 'bg-emerald-500 text-black' : 'bg-gray-800 text-gray-500'}`}>
-                    {app.title.charAt(0)}
+                    {(app.title || '').charAt(0)}
                   </div>
                   <div className="text-left">
                     <p className={`text-sm font-bold truncate w-24 lg:w-32 ${activeApp && activeApp.id === app.id ? 'text-white' : 'text-gray-400'}`}>
@@ -173,13 +178,13 @@ export default function App() {
             <div className="relative w-full flex items-center justify-center md:h-full">
               <div className="absolute inset-0 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none hidden md:block"></div>
               <div className="relative w-full max-w-[320px] md:max-w-none md:h-full aspect-[9/16] md:aspect-[9/19] bg-black border-[8px] md:border-[10px] border-[#151515] rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl ring-1 ring-white/10">
-                {/* Dynamically assign the camera permissions to the iframe if specified in JSON */}
+                {/* Dynamically load the arcade app with robust permissions */}
                 <iframe 
                   src={activeApp.url} 
                   title={activeApp.title} 
                   className="w-full h-full" 
-                  sandbox="allow-scripts allow-same-origin" 
-                  allow={activeApp.camera === 'allow' ? "camera; autoplay" : undefined}
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms" 
+                  allow="camera; microphone; autoplay; fullscreen; clipboard-read; clipboard-write"
                 />
               </div>
             </div>
@@ -194,7 +199,7 @@ export default function App() {
             <div className="space-y-4">
               <h2 className="text-4xl lg:text-5xl font-black tracking-tighter leading-none">{activeApp.title}</h2>
               <p className="text-gray-500 leading-relaxed font-medium text-sm lg:text-base">
-                {activeApp.description}
+                {activeApp.description || ''}
               </p>
             </div>
 
