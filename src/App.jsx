@@ -105,6 +105,17 @@ export default function App() {
   if (isFullscreen && activeApp) {
     return (
       <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
+        <div className="absolute top-4 left-4 z-50">
+          <button 
+            onClick={() => {
+              const randomIndex = Math.floor(Math.random() * filteredApps.length);
+              handleSelectApp(filteredApps[randomIndex].id);
+            }}
+            className="px-5 py-2.5 bg-black/60 text-white border border-white/20 rounded-full font-black text-[10px] uppercase tracking-widest backdrop-blur-md hover:bg-white/10 hover:border-emerald-500 transition-all flex items-center gap-2 shadow-2xl"
+          >
+            🎲 Random Game
+          </button>
+        </div>
         <div className="absolute top-4 right-4 z-50">
           <button 
             onClick={() => setIsFullscreen(false)}
