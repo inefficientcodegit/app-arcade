@@ -17,6 +17,7 @@ export default function App() {
   const [activeAppIndex, setActiveAppIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // A simple shuffle function (Fisher-Yates algorithm)
   const shuffleArray = (array) => {
@@ -43,9 +44,16 @@ export default function App() {
         // Check if there is a ?game= ID in the URL
         const params = new URLSearchParams(window.location.search);
         const gameId = params.get('game');
+        const bigGameId = params.get('biggame');
 
         let startIndex = 0;
-        if (gameId) {
+        if (bigGameId) {
+          const index = shuffledGames.findIndex(app => app.id === bigGameId);
+          if (index !== -1) {
+            startIndex = index;
+            setIsFullscreen(true);
+          }
+        } else if (gameId) {
           const index = shuffledGames.findIndex(app => app.id === gameId);
           if (index !== -1) startIndex = index;
         }
@@ -66,14 +74,15 @@ export default function App() {
     if (apps.length > 0 && apps[activeAppIndex]) {
       const currentApp = apps[activeAppIndex];
       try {
-        const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?game=${currentApp.id}`;
+        const paramName = isFullscreen ? 'biggame' : 'game';
+        const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?${paramName}=${currentApp.id}`;
         window.history.pushState({ path: newUrl }, '', newUrl);
       } catch (error) {
         // Ignored. Browsers often block history.pushState in blob/iframe environments
         console.warn("Could not update URL history state (expected behavior in iframes).");
       }
     }
-  }, [activeAppIndex, apps]);
+  }, [activeAppIndex, apps, isFullscreen]);
 
   const filteredApps = apps.filter(app => (filter === 'all' ? true : app.status === filter));
   const activeApp = apps[activeAppIndex] || apps[0];
@@ -92,6 +101,28 @@ export default function App() {
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
     </div>
   );
+
+  if (isFullscreen && activeApp) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
+        <div className="absolute top-4 right-4 z-50">
+          <button 
+            onClick={() => setIsFullscreen(false)}
+            className="px-5 py-2.5 bg-black/60 text-white border border-white/20 rounded-full font-black text-[10px] uppercase tracking-widest backdrop-blur-md hover:bg-white/10 hover:border-emerald-500 transition-all flex items-center gap-2 shadow-2xl"
+          >
+            ← Back to Inefficient Arcade
+          </button>
+        </div>
+        <iframe 
+          src={activeApp.url} 
+          title={activeApp.title} 
+          className="w-full h-full border-0" 
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms" 
+          allow="camera; microphone; autoplay; fullscreen; clipboard-read; clipboard-write"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen md:h-screen bg-[#050505] text-gray-100 font-sans md:overflow-hidden flex flex-col selection:bg-emerald-500/30">
@@ -201,6 +232,13 @@ export default function App() {
               <p className="text-gray-500 leading-relaxed font-medium text-sm lg:text-base">
                 {activeApp.description || ''}
               </p>
+              <button 
+                onClick={() => setIsFullscreen(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                Play Full Screen
+              </button>
             </div>
 
             {activeApp.status === 'final' ? (
