@@ -105,32 +105,37 @@ export default function App() {
   if (isFullscreen && activeApp) {
     return (
       <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
-        <div className="absolute top-4 left-4 z-50">
-          <button 
-            onClick={() => {
-              const randomIndex = Math.floor(Math.random() * filteredApps.length);
-              handleSelectApp(filteredApps[randomIndex].id);
-            }}
-            className="px-5 py-2.5 bg-black/60 text-white border border-white/20 rounded-full font-black text-[10px] uppercase tracking-widest backdrop-blur-md hover:bg-white/10 hover:border-emerald-500 transition-all flex items-center gap-2 shadow-2xl"
-          >
-            🎲 Random Game
-          </button>
-        </div>
-        <div className="absolute top-4 right-4 z-50">
-          <button 
-            onClick={() => setIsFullscreen(false)}
-            className="px-5 py-2.5 bg-black/60 text-white border border-white/20 rounded-full font-black text-[10px] uppercase tracking-widest backdrop-blur-md hover:bg-white/10 hover:border-emerald-500 transition-all flex items-center gap-2 shadow-2xl"
-          >
-            ← Back to Inefficient Arcade
-          </button>
-        </div>
-        <iframe 
+        <iframe
           src={activeApp.url} 
           title={activeApp.title} 
           className="w-full h-full border-0" 
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms" 
           allow="camera; microphone; autoplay; fullscreen; clipboard-read; clipboard-write"
         />
+        {(activeApp.iosLink || activeApp.androidLink) && (
+          <div className="absolute bottom-4 left-4 z-50 flex gap-2">
+            {activeApp.iosLink && (
+              <a
+                href={activeApp.iosLink}
+                target="_blank"
+                rel="noreferrer"
+                className="p-2.5 bg-black/60 text-white border border-white/20 rounded-full backdrop-blur-md hover:bg-white/10 hover:border-emerald-500 transition-all shadow-2xl"
+              >
+                <AppleIcon />
+              </a>
+            )}
+            {activeApp.androidLink && (
+              <a
+                href={activeApp.androidLink}
+                target="_blank"
+                rel="noreferrer"
+                className="p-2.5 bg-black/60 text-white border border-white/20 rounded-full backdrop-blur-md hover:bg-white/10 hover:border-emerald-500 transition-all shadow-2xl"
+              >
+                <PlayStoreIcon />
+              </a>
+            )}
+          </div>
+        )}
       </div>
     );
   }
